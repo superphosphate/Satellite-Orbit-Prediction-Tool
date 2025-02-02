@@ -1,0 +1,6 @@
+numpy~=1.26.0
+matplotlib~=3.6.3
+plotly~=5.18.0
+Cartopy~=0.24.1
+skyfield~=1.46
+pytz==2024.1
