@@ -1,16 +1,14 @@
-# Satellite Orbit Prediction Tool 卫星轨道预测工具 by SuperPhosphate
+# Satellite Orbit Prediction Tool
 
 If you like this project, please give it a "star"! Thank you for your support!
 
-如果你喜欢这个项目，请点亮“star”！谢谢你的支持！
-
 I am currently still actively learning English and have utilized advanced AI translation technology for the English sections of the project documentation. However, please note that the Chinese version remains the authoritative version for all content. I apologize for any inconvenience this may cause and sincerely thank you for your understanding and cooperation.
 
-我目前仍在学习英文，对于项目文档中的英文部分，我借助了AI翻译技术。但请注意，所有内容均以中文版本为准。对于可能由此带来的任何不便，我深表歉意，并衷心感谢您的理解与配合。
+[中文说明文档](README-zh.md)
 
 ---
 
-## [Overview](#project-introduction) [概述](#项目简介)
+## Overview
 
 ### **Project Introduction**
 
@@ -24,6 +22,7 @@ This project is a Python-based satellite trajectory analysis tool that supports 
    - Automatically scans the working directory to intelligently recognize `.tle`/`.txt` files.
    - Graphical file selection interface (supports Chinese path names).
    - Batch parsing of multiple satellite data.
+   - Update your TLE data from a website, and generate timestamp automatically (in [GUI](gui.py)).
 
 2. **Orbit Visualization**
    - 2D map projection (supports display of latitude and longitude trajectories).
@@ -35,6 +34,8 @@ This project is a Python-based satellite trajectory analysis tool that supports 
    - Orbit period calculation.
    - Display of sub-satellite point latitude and longitude.
 
+4. **GUI enable**
+   - operate in a `tkinter` GUI
 ---
 
 ### **Technical Highlights**
@@ -49,99 +50,36 @@ This project is a Python-based satellite trajectory analysis tool that supports 
 
 **Data Interface**: Supports NORAD standard TLE format.
 
-**Code Standards**: Modular development with a pylint score of 9.52/10.
+**Code Standards**: Modular development with pylint scores of 9.67/10 (main.py) and 9.68/10 (gui.py).
 
 ---
 
 With this tool, users can complete the entire process of analysis from raw TLE data to visualized trajectories within 5 minutes, significantly lowering the barrier to entry for aerospace data analysis.
 
-[**Clike me to see Environment Requirements**](#Environment-Requirements-环境要求)
-
 ---
 
-### **项目简介**
-
-本项目是一个基于Python的卫星轨迹分析工具，支持通过TLE（两行轨道根数）数据快速解析卫星轨道信息，并提供二维/三维可视化功能，适用于航天数据分析、卫星状态监控及教学演示场景。
-
----
-
-### **核心功能**  
-
-1. **TLE文件管理**  
-   - 自动扫描工作目录，智能识别`.tle`/`.txt`文件  
-   - 图形化文件选择界面（支持中文路径）  
-   - 多卫星数据批量解析  
-
-2. **轨道可视化**  
-   - 二维地图投影（支持经纬度轨迹显示）  
-   - 三维空间轨迹交互式展示（可旋转/缩放）  
-   - 24小时轨道预测曲线  
-
-3. **卫星状态查询**  
-   - 实时位置坐标（地心坐标系）  
-   - 轨道周期计算  
-   - 星下点经纬度显示  
-
----
-
-### **技术亮点**  
-
-- **轻量化架构**：纯Python实现，依赖库仅需`Skyfield`+`Matplotlib`+`Plotly`  
-- **跨平台支持**：兼容Windows/Linux/macOS系统(预期应如此，项目开发使用Windows)  
-- **误差控制**：采用SPG4/SDP4轨道预测模型，精度达千米级  
-
----
-
-**项目规模**：约300行代码，开箱即用  
-
-**数据接口**：支持NORAD标准TLE格式  
-
-**代码规范**：模块化开发，pylint评分9.52/10
-
----
-
-通过该工具，用户可在5分钟内完成从原始TLE数据到可视化轨迹的全流程分析，大幅降低航天数据分析门槛
-
----
-
-## Environment Requirements 环境要求
-
-### Python Version Python版本
-
-- Python 3.9+
-
-### requirements 依赖库
-
-```text
-skyfield~=1.46
-numpy~=1.26.0
-matplotlib~=3.8.2
-plotly~=5.18.0
-pytz~=2024.1
-cartopy~=0.22.0
-
-```
-
-### Install Requirements 安装依赖
+### Install Requirements
 
 ```bash
+# if use venv
+# python -m venv myenv
 pip install -r requirements.txt
 ```
 
 ---
 
-## Quick Start 快速开始
+## Quick Start
 
-### 1. Prepare the TLE file 准备TLE文件
+### 1. Prepare the TLE file
 
 ```text
-Satellite Name 卫星名称
-First line of TLE data (starting with '1 ') 第一行TLE数据（以'1 '开头）
-Second line of TLE data (starting with '2 ') 第二行TLE数据（以'2 '开头）
-(These groups can be repeated for multiple satellites 可重复多组）
+Satellite Name
+First line of TLE data (starting with '1 ')
+Second line of TLE data (starting with '2 ') 
+(These groups can be repeated for multiple satellites）
 ```
 
-Sample File 示例文件 `satellites.tle`:
+Sample File `satellites.tle`:
 
 ```tle
 ISS (ZARYA)
@@ -152,7 +90,6 @@ ISS (ZARYA)
 ### 2. Running the Program 运行程序
 
 Execute the main script:
-执行主脚本：
 
 ```bash
 python satellite_tracker.py
@@ -160,9 +97,9 @@ python satellite_tracker.py
 
 ---
 
-## Usage Instructions 使用说明
+## Usage Instructions
 
-### Step 1 步骤1 - Select TLE File 选择TLE文件
+### Step 1 - Select TLE File
 
 The program automatically scans the working directory and lists all .tle/.txt files:
 程序自动扫描工作目录并列出所有.tle/.txt文件：
@@ -174,10 +111,9 @@ The program automatically scans the working directory and lists all .tle/.txt fi
 输入文件编号选择 (输入0退出): 1
 ```
 
-### Step 2 步骤2 - Select Satellite 选择卫星
+### Step 2 - Select Satellite
 
 After parsing the file, the program lists all satellites, just input the index:
-程序解析文件后列出所有卫星：
 
 ```text
 1. ISS (ZARYA)
@@ -186,59 +122,57 @@ After parsing the file, the program lists all satellites, just input the index:
 已选择卫星: ISS (ZARYA)
 ```
 
-### Step 3 步骤3 - Generate Trajectory 生成轨迹
+### Step 3 - Generate Trajectory
 
 The program will automatically:
-程序将自动：
 
-1. Generate a UTC time series (starting from the current time for 24 hours) 生成UTC时间序列（当前时间起24小时）
-2. Calculate satellite positions 计算卫星位置
-3. Display the following visualization results 显示以下可视化结果
+1. Generate a UTC time series (starting from the current time for 24 hours)
+2. Calculate satellite positions
+3. Display the following visualization results
 
 ---
 
-## Visualization Output 可视化输出
+## Visualization Output
 
-### 2D Trajectory Map 二维轨迹地图
+### 2D Trajectory Map
 
 Features 特征:
 
-- Uses PlateCarree projection 使用PlateCarree投影
-- Red trajectory lines mark the satellite path 红色轨迹线标注卫星路径
-- Green/blue dots mark the start and end points 绿色/蓝色圆点标记起止点
-- Automatically loads a global basemap and coastlines(TODO) 自动加载全球底图与海岸线( 未完成 )
+- Uses PlateCarree projection
+- Red trajectory lines mark the satellite path
+- Green/blue dots mark the start and end points
+- Automatically loads a global basemap and coastlines(TODO)
 
 ### 3D Orbit Diagram 三维轨道图
 
-Features 特征：
+Features：
 
-- Semi-transparent Earth model (radius of 6378.1 km) 半透明地球模型（半径6378.1km）
-- Red trajectory lines + yellow markers display the orbit 红色轨迹线+黄色标记点显示轨道
-- Interactive rotation/zoom capabilities 可交互旋转/缩放视图
-- Equal-scale coordinate system display 等比例坐标系显示
+- Semi-transparent Earth model (radius of 6378.1 km)
+- Red trajectory lines + yellow markers display the orbit
+- Interactive rotation/zoom capabilities
+- Equal-scale coordinate system display
 
 ---
 
-## Code Structure 代码结构
+## Code Structure
 
-### Main Class Descriptions 主要类说明
+### Main Class Descriptions
 
 #### `TLEFileSelector`
 
-- `load_tle_from_directory()`: Automatically scans the working directory to obtain a list of TLE files. 自动扫描工作目录获取TLE文件列表
+- `load_tle_from_directory()`: Automatically scans the working directory to obtain a list of TLE files.
 
 #### `SatelliteTracker`
 
 Core functionality class:
-核心功能类：
 
-- Initializes by parsing TLE content 初始化时解析TLE内容
-- `select_satellite_by_user()`: Interactive satellite selection 交互式卫星选择
-- `calculate_positions()`: Calculates orbital positions 计算轨道位置
-- `plot_2d_track()`: Generates a 2D map 生成二维地图
-- `plot_3d_orbit()`: Generates a 3D view 生成三维视图
+- Initializes by parsing TLE content
+- `select_satellite_by_user()`: Interactive satellite selection
+- `calculate_positions()`: Calculates orbital positions
+- `plot_2d_track()`: Generates a 2D map
+- `plot_3d_orbit()`: Generates a 3D view
 
-### Key Methods 关键方法
+### Key Methods
 
 ```python
 def generate_times(hours=24, start_time=None):
@@ -252,25 +186,25 @@ def _parse_tle(content):
 
 ## Notes 注意事项
 
-1. **Timezone Handling 时区处理**
-   - All time calculations are performed using UTC time 所有时间计算均使用UTC时间
-   - Local time conversion needs to be done manually 本地时间需自行转换
+1. **Timezone Handling**
+   - All time calculations are performed using UTC time
+   - Local time conversion needs to be done manually
 
-2. **File Requirements 文件要求**
-   - Ensure the TLE file is encoded in UTF-8 确保TLE文件为UTF-8编码
-   - Each set of TLE must contain 3 lines (name line + two data lines) 每组TLE必须包含3行（名称行+两数据行）
+2. **File Requirements**
+   - Ensure the TLE file is encoded in UTF-8
+   - Each set of TLE must contain 3 lines (name line + two data lines)
 
-3. **Graphic Dependencies 图形依赖**
-   - The 2D map requires Cartopy's map data cache (first run may be slower) 二维地图需要Cartopy的地图数据缓存（首次运行可能较慢）
-   - 3D visualization requires a browser with WebGL support 三维可视化需浏览器支持WebGL
+3. **Graphic Dependencies**
+   - The 2D map requires Cartopy's map data cache (first run may be slower)
+   - 3D visualization requires a browser with WebGL support
 
-4. **Common Errors 常见错误**
-   - `ValueError: TLE文件格式错误`: means `ValueError: Incorrect TLE file format` Check the number of lines and format of the file 检查文件行数与格式
-   - `KeyError: 选择编号`: means `KeyError: Invalid selection number` Input must be a valid number 输入必须是有效数字
+4. **Common Errors**
+   - `ValueError: TLE文件格式错误`: means `ValueError: Incorrect TLE file format` Check the number of lines and format of the file
+   - `KeyError: 选择编号`: means `KeyError: Invalid selection number` Input must be a valid number
 
 ---
 
-## Example Workflow 示例运行流程
+## Example Workflow
 
 ```text
 > python satellite_tracker.py
@@ -293,26 +227,26 @@ def _parse_tle(content):
 
 ### V0.2.1
 
-- Draw longitude and latitude lines on the Earth in the 3D view as a simple substitute for the Earth's basemap. 为三维视图中的地球绘制经纬线，简单代替地球底图
+- Draw longitude and latitude lines on the Earth in the 3D view as a simple substitute for the Earth's basemap.
 
 ### V0.2.0
 
-- Added automatic file scanning functionality 新增自动文件扫描功能
-- Support for .txt extensions 支持.txt扩展名
-- Optimized TLE format validation 优化TLE格式校验
-- Fixed weird trajectory lines in the 3D view by using a method to increase the time sampling rate 使用提高时间采样率的方法，修复三维视图中怪异的轨迹连线
+- Added automatic file scanning functionality
+- Support for .txt extensions
+- Optimized TLE format validation
+- Fixed weird trajectory lines in the 3D view by using a method to increase the time sampling rate
 
 ### V0.1.0
 
-- Implemented basic orbital calculations 实现基础轨道计算
-- Completed basic 2D/3D visualization functionality 完成基本的二维/三维可视化功能
+- Implemented basic orbital calculations
+- Completed basic 2D/3D visualization functionality
 
 ---
 
 ## TODO 待更新
 
-- Complete the Earth's basemap drawing in the 3D view 完成三维视图中地球底图绘制工作
-- Select and display multiple satellites simultaneously 选择多卫星同步展示
+- Complete the Earth's basemap drawing in the 3D view
+- Select and display multiple satellites simultaneously
 - ...
 
 ---

@@ -2,9 +2,11 @@
 """
 author: ZengFanyu
 email: 3024826049@qq.com
-date: 2025/01/29
+date: 2025/06/05
 
 update:
+V0.3.0
+- add GUI in gui.py
 V0.2.1
 - fix 3D
 V0.2.0
@@ -22,10 +24,12 @@ from skyfield.api import load, EarthSatellite
 import numpy as np
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
+import tkinter as tk
+from gui import SatelliteGUI
 
 
 class TLEFileSelector:
-
+    """提供TLE筛选相关功能"""
     @staticmethod
     def load_tle_from_directory():
         """从工作目录中读取文件"""
@@ -60,6 +64,7 @@ class TLEFileSelector:
 
 
 class SatelliteTracker:
+    """卫星轨道仿真相关工具类"""
     def __init__(self, tle_file_content):
         self.satellites = self._parse_tle(tle_file_content)
         self.selected_satellite = self.satellites[0]
@@ -206,7 +211,7 @@ class SatelliteTracker:
             figure.add_trace(go.Scatter3d(
                 x=x, y=y, z=z,
                 mode='lines',
-                line=dict(color='rgba(150, 150, 150, 0.5)', width=1),
+                line={'color': 'rgba(150, 150, 150, 0.5)', 'width': 1},
                 hoverinfo='none',
                 showlegend=False
             ))
@@ -258,6 +263,11 @@ class SatelliteTracker:
 
 
 if __name__ == "__main__":
+    # 启动GUI应用
+    root = tk.Tk()
+    app = SatelliteGUI(root)
+    root.mainloop()
+
     file_name = TLEFileSelector.load_tle_from_directory()
 
     if file_name:

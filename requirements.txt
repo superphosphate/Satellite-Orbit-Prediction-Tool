@@ -4,3 +4,4 @@ plotly~=5.18.0
 Cartopy~=0.24.1
 skyfield~=1.46
 pytz==2024.1
+requests~=2.32.3
