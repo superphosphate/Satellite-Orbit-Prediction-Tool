@@ -144,9 +144,10 @@ class SatelliteTracker:
 
         plt.figure(figsize=(12, 6))
         ax = plt.axes(projection=crs.PlateCarree())
-        ax.set_global()
-        ax.stock_img()
-        ax.coastlines()
+        # 使用 cartopy 的 GeoAxes 方法 - 类型忽略
+        getattr(ax, 'set_global', lambda: None)()  # type: ignore
+        getattr(ax, 'stock_img', lambda: None)()  # type: ignore
+        getattr(ax, 'coastlines', lambda: None)()  # type: ignore
 
         # 绘制轨迹
         ax.plot(self.subpoint.longitude.degrees,

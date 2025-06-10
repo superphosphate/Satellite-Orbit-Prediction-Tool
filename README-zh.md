@@ -56,13 +56,13 @@
 
 ---
 
-## Environment Requirements 环境要求
+## 环境要求
 
-### Python Version Python版本
+### Python版本
 
 - Python 3.9+
 
-### requirements 依赖库
+### 依赖库
 
 ```text
 numpy~=1.26.0
@@ -85,9 +85,9 @@ pip install -r requirements.txt
 
 ---
 
-## Quick Start 快速开始
+## 快速开始
 
-### 1. Prepare the TLE file 准备TLE文件
+### 1. 准备TLE文件
 
 ```text
 卫星名称
@@ -104,7 +104,7 @@ ISS (ZARYA)
 2 25544  51.6404 208.9163 0006973 334.1498  72.0548 15.49792978436275
 ```
 
-### 2. Running the Program 运行程序
+### 2. 运行程序
 
 执行主脚本：
 
@@ -220,7 +220,7 @@ def _parse_tle(content):
 
 ---
 
-## Example Workflow 示例运行流程
+## 示例运行流程
 
 ```text
 > python satellite_tracker.py
@@ -239,7 +239,16 @@ def _parse_tle(content):
 
 ---
 
-## Update Log 更新日志
+## 更新日志
+
+### V0.3.1
+
+- 修复了类型注解缺失造成的编辑器报错
+
+### V0.3.0
+
+- 添加了GUI支持
+- 在GUI程序中，可以从网页中下载卫星数据
 
 ### V0.2.1
 
@@ -259,7 +268,7 @@ def _parse_tle(content):
 
 ---
 
-## TODO 待更新
+## TODO
 
 - 完成三维视图中地球底图绘制工作
 - 选择多卫星同步展示

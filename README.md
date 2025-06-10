@@ -36,6 +36,7 @@ This project is a Python-based satellite trajectory analysis tool that supports 
 
 4. **GUI enable**
    - operate in a `tkinter` GUI
+
 ---
 
 ### **Technical Highlights**
@@ -87,7 +88,7 @@ ISS (ZARYA)
 2 25544  51.6404 208.9163 0006973 334.1498  72.0548 15.49792978436275
 ```
 
-### 2. Running the Program 运行程序
+### 2. Running the Program
 
 Execute the main script:
 
@@ -143,7 +144,7 @@ Features 特征:
 - Green/blue dots mark the start and end points
 - Automatically loads a global basemap and coastlines(TODO)
 
-### 3D Orbit Diagram 三维轨道图
+### 3D Orbit Diagram
 
 Features：
 
@@ -184,7 +185,7 @@ def _parse_tle(content):
 
 ---
 
-## Notes 注意事项
+## Notes
 
 1. **Timezone Handling**
    - All time calculations are performed using UTC time
@@ -223,7 +224,16 @@ def _parse_tle(content):
 
 ---
 
-## Update Log 更新日志
+## Update Log
+
+### V0.3.1
+
+- Added missing type annotations to the code in this commit, to improve maintainability
+
+### V0.3.0
+
+- add GUI: you can download TLE in GUI
+- fix README: now it's README.md and README-zh.md
 
 ### V0.2.1
 
@@ -243,7 +253,7 @@ def _parse_tle(content):
 
 ---
 
-## TODO 待更新
+## TODO
 
 - Complete the Earth's basemap drawing in the 3D view
 - Select and display multiple satellites simultaneously

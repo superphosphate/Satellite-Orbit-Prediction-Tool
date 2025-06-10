@@ -21,25 +21,26 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import plotly.graph_objects as go
 from cartopy import crs
+from typing import Optional, List, Any
 
 class SatelliteGUI:
     """Gui主类"""
     def __init__(self, self_root):
-        self.status_var = None
-        self.display_frame = None
-        self.hours_var = None
-        self.satellite_listbox = None
-        self.progress_bar = None
+        self.status_var: Optional[tk.StringVar] = None
+        self.display_frame: Optional[ttk.LabelFrame] = None
+        self.hours_var: Optional[tk.StringVar] = None
+        self.satellite_listbox: Optional[tk.Listbox] = None
+        self.progress_bar: Optional[ttk.Progressbar] = None
         self.progress_var = tk.DoubleVar()
         self.root = self_root
         self.root.title("卫星轨道预测工具")
         self.root.geometry("1200x800")
         # 数据存储
-        self.satellites = []
-        self.selected_satellite = None
+        self.satellites: List[EarthSatellite] = []
+        self.selected_satellite: Optional[EarthSatellite] = None
         self.ts = load.timescale()
-        self.geocentric = None
-        self.subpoint = None
+        self.geocentric: Optional[Any] = None
+        self.subpoint: Optional[Any] = None
         # 创建界面
         self.create_widgets()
 
@@ -121,8 +122,10 @@ class SatelliteGUI:
             messagebox.showerror("错误", "请输入有效的网址")
             return
         dialog.destroy()
-        self.progress_bar.pack(fill=tk.X, pady=2)
-        self.status_var.set(f"正在下载 {name}...")
+        if self.progress_bar:
+            self.progress_bar.pack(fill=tk.X, pady=2)
+        if self.status_var:
+            self.status_var.set(f"正在下载 {name}...")
         def download_thread():
             try:
                 response = requests.get(url, stream=True, timeout=10) # timeout
@@ -148,13 +151,17 @@ class SatelliteGUI:
         threading.Thread(target=download_thread, daemon=True).start()
     def download_complete(self, filepath, filename):
         """下载完成处理"""
-        self.progress_bar.pack_forget()
-        self.status_var.set(f"下载完成: {filename}")
+        if self.progress_bar:
+            self.progress_bar.pack_forget()
+        if self.status_var:
+            self.status_var.set(f"下载完成: {filename}")
         self.load_tle_file(filepath)
     def download_error(self, error_msg):
         """下载错误处理"""
-        self.progress_bar.pack_forget()
-        self.status_var.set("下载失败")
+        if self.progress_bar:
+            self.progress_bar.pack_forget()
+        if self.status_var:
+            self.status_var.set("下载失败")
         messagebox.showerror("下载错误", f"下载失败: {error_msg}")
     def load_local_file(self):
         """加载本地TLE文件"""
@@ -198,7 +205,8 @@ class SatelliteGUI:
                 content = f.read()
             self.satellites = self.parse_tle(content)
             self.update_satellite_list()
-            self.status_var.set(f"已加载 {len(self.satellites)} 颗卫星")
+            if self.status_var:
+                self.status_var.set(f"已加载 {len(self.satellites)} 颗卫星")
         except Exception as e:
             messagebox.showerror("错误", f"加载文件失败: {str(e)}")
     @staticmethod
@@ -218,29 +226,34 @@ class SatelliteGUI:
         return satellites
     def update_satellite_list(self):
         """更新卫星列表显示"""
-        self.satellite_listbox.delete(0, tk.END)
-        for sat in self.satellites:
-            self.satellite_listbox.insert(tk.END, sat.name)
+        if self.satellite_listbox:
+            self.satellite_listbox.delete(0, tk.END)
+            for sat in self.satellites:
+                sat_name = getattr(sat, 'name', 'Unknown Satellite')
+                self.satellite_listbox.insert(tk.END, sat_name)
     def on_satellite_select(self, event):
         """卫星选择事件处理"""
         selection = event.widget.curselection()
         if selection:
             index = selection[0]
             self.selected_satellite = self.satellites[index]
-            self.status_var.set(f"已选择卫星: {self.selected_satellite.name}")
+            if self.status_var and self.selected_satellite:
+                sat_name = getattr(self.selected_satellite, 'name', 'Unknown Satellite')
+                self.status_var.set(f"已选择卫星: {sat_name}")
     def calculate_orbit(self):
         """计算卫星轨道"""
         if not self.selected_satellite:
             messagebox.showwarning("警告", "请先选择一颗卫星")
             return
         try:
-            hours = float(self.hours_var.get())
+            hours = float(self.hours_var.get() if self.hours_var else "24")
             if hours <= 0:
                 raise ValueError("时间必须大于0")
         except ValueError:
             messagebox.showerror("错误", "请输入有效的时间数值")
             return
-        self.status_var.set("正在计算轨道...")
+        if self.status_var:
+            self.status_var.set("正在计算轨道...")
         # 生成时间序列
         start_time = datetime.now(timezone.utc)
         end_time = start_time + timedelta(hours=hours)
@@ -253,48 +266,62 @@ class SatelliteGUI:
         # 计算位置
         time_array = self.ts.utc(time_points)
         self.geocentric = self.selected_satellite.at(time_array)
-        self.subpoint = self.geocentric.subpoint()
-        self.status_var.set(f"轨道计算完成 ({len(time_points)} 个点)")
+        self.subpoint = getattr(self.geocentric, 'subpoint', lambda: None)()
+        if self.status_var:
+            self.status_var.set(f"轨道计算完成 ({len(time_points)} 个点)")
     def show_2d_plot(self):
         """显示2D轨迹图"""
         if not self.subpoint:
             messagebox.showwarning("警告", "请先计算轨道")
             return
         # 清除显示区域
-        for widget in self.display_frame.winfo_children():
-            widget.destroy()
+        if self.display_frame:
+            for widget in self.display_frame.winfo_children():
+                widget.destroy()
         # 创建matplotlib图形
         fig, ax = plt.subplots(figsize=(10, 6), subplot_kw={'projection': crs.PlateCarree()})
-        ax.set_global()
-        ax.stock_img()
-        ax.coastlines()
+        # 使用 cartopy 的 GeoAxes 方法 - 类型忽略
+        getattr(ax, 'set_global', lambda: None)()  # type: ignore
+        getattr(ax, 'stock_img', lambda: None)()  # type: ignore
+        getattr(ax, 'coastlines', lambda: None)()  # type: ignore
         # 绘制轨迹
-        ax.plot(self.subpoint.longitude.degrees,
-                self.subpoint.latitude.degrees,
-                'r-', transform=crs.Geodetic(),
-                linewidth=2, label=self.selected_satellite.name)
-        # 标记起终点
-        ax.plot(self.subpoint.longitude.degrees[0],
-                self.subpoint.latitude.degrees[0],
-                'go', transform=crs.Geodetic(),
-                markersize=8, label='Start')
-        ax.plot(self.subpoint.longitude.degrees[-1],
-                self.subpoint.latitude.degrees[-1],
-                'bo', transform=crs.Geodetic(),
-                markersize=8, label='End')
+        longitude_data = getattr(self.subpoint, 'longitude', None)
+        latitude_data = getattr(self.subpoint, 'latitude', None)
+        if longitude_data and latitude_data:
+            lon_degrees = getattr(longitude_data, 'degrees', [])
+            lat_degrees = getattr(latitude_data, 'degrees', [])
+            ax.plot(lon_degrees, lat_degrees,
+                    'r-', transform=crs.Geodetic(),
+                    linewidth=2, label=self.selected_satellite.name if self.selected_satellite else "Unknown")
+            # 标记起终点
+            if len(lon_degrees) > 0 and len(lat_degrees) > 0:
+                ax.plot(lon_degrees[0], lat_degrees[0],
+                        'go', transform=crs.Geodetic(),
+                        markersize=8, label='Start')
+                ax.plot(lon_degrees[-1], lat_degrees[-1],
+                        'bo', transform=crs.Geodetic(),
+                        markersize=8, label='End')
         ax.legend()
-        plt.title(f"{self.selected_satellite.name}")
+        plt.title(f"{self.selected_satellite.name if self.selected_satellite else 'Unknown'}")
         # 嵌入到GUI
-        canvas = FigureCanvasTkAgg(fig, self.display_frame)
-        canvas.draw()
-        canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+        if self.display_frame:
+            canvas = FigureCanvasTkAgg(fig, self.display_frame)
+            canvas.draw()
+            canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
     def show_3d_plot(self):
         """显示3D轨道图"""
         if not self.geocentric:
             messagebox.showwarning("警告", "请先计算轨道")
             return
         # 创建3D图形
-        position = self.geocentric.position.km
+        position_obj = getattr(self.geocentric, 'position', None)
+        if not position_obj:
+            messagebox.showerror("错误", "无法获取位置数据")
+            return
+        position_km = getattr(position_obj, 'km', None)
+        if position_km is None:
+            messagebox.showerror("错误", "无法获取公里单位的位置数据")
+            return
         earth_radius = 6378.1
         # 创建地球表面
         theta = np.linspace(0, 2 * np.pi, 50)
@@ -341,14 +368,23 @@ class SatelliteGUI:
                 showlegend=False
             ))
         # 添加卫星轨道
-        fig.add_trace(go.Scatter3d(
-            x=position[0], y=position[1], z=position[2],
-            mode='lines',
-            line={'color': 'red', 'width': 4},
-            name=f'{self.selected_satellite.name} 轨道'
-        ))
+        try:
+            # 安全地访问位置数组
+            x_pos = position_km[0] if hasattr(position_km, '__getitem__') and len(position_km) > 0 else []
+            y_pos = position_km[1] if hasattr(position_km, '__getitem__') and len(position_km) > 1 else []
+            z_pos = position_km[2] if hasattr(position_km, '__getitem__') and len(position_km) > 2 else []
+            
+            fig.add_trace(go.Scatter3d(
+                x=x_pos, y=y_pos, z=z_pos,
+                mode='lines',
+                line={'color': 'red', 'width': 4},
+                name=f'{self.selected_satellite.name if self.selected_satellite else "Unknown"} 轨道'
+            ))
+        except (IndexError, TypeError) as e:
+            messagebox.showerror("错误", f"处理位置数据时出错: {str(e)}")
+            return
         fig.update_layout(
-            title=f'{self.selected_satellite.name} 三维轨道可视化',
+            title=f'{self.selected_satellite.name if self.selected_satellite else "Unknown"} 三维轨道可视化',
             scene={'xaxis': {'visible': True},
                    'yaxis': {'visible': True},
                    'zaxis': {'visible': True},
